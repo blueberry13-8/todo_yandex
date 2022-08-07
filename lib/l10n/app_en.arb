@@ -1,0 +1,15 @@
+{
+    "mainTitle": "My tasks",
+    "doneSubtitle" : "Done",
+    "newInTheEnd" : "New",
+    "hintTextField" : "What should to be done...",
+    "importance" : "Importance",
+    "no" : "No",
+    "low" : "Low",
+    "high" : "High",
+    "delete" : "Delete",
+    "doneBy" : "Do before",
+    "save" : "SAVE",
+    "deleteQuestion" : "Are you sure you wish to delete this task?",
+    "yes" : "Yes"
+}
