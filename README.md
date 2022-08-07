@@ -1,16 +1,28 @@
 # todo_yandex
 
-TODO list(Yandex project).
+TODO list(project from Yandex Flutter course).
 
-## Getting Started
+## О чем приложение
 
-This project is a starting point for a Flutter application.
+Оставляйте заметки, задания, напоминания себе в данном приложении. Распределяйте их по важности, указывайте дату, и так же можете помечайть выполненным свои задания.
 
-A few resources to get you started if this is your first Flutter project:
+## APK
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+[Download the APK](https://disk.yandex.ru/d/9rPKCFKpA4icRA)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## List of features
+* Saving files in Backend Storage
+* Files sharing
+* Reporting crashes via Crashlytics
+* Dark and light theme
+* Beautiful animations
+
+
+## Использованные технологии
+
+* [Dart programming language](https://dart.dev)
+* [Flutter framework](https://flutter.dev)
+* [Firebase](https://firebase.google.com)
+  * Remote configs
+  * Crashlytics
