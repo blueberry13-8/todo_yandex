@@ -50,7 +50,7 @@ class _TasksPageState extends State<TasksPage> {
                 delegate: MySliverAppBar(
                   () {
                     showDone = !showDone;
-                    print(showDone);
+                    ;
                     callbackSetState();
                   },
                   showDone,

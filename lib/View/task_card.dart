@@ -148,8 +148,7 @@ class _TaskCardState extends State<TaskCard> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text("Confirm"),
-                  content:
-                    Text(AppLocalizations.of(context)!.deleteQuestion),
+                  content: Text(AppLocalizations.of(context)!.deleteQuestion),
                   actions: <Widget>[
                     TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
@@ -187,9 +186,9 @@ class _TaskCardState extends State<TaskCard> {
           ),
           subtitle: widget.task.deadline != null
               ? Text(
-              DateFormat('d MMMM yyyy',
-                  AppLocalizations.of(context)!.localeName)
-                  .format(widget.task.deadlineDate!),
+                  DateFormat('d MMMM yyyy',
+                          AppLocalizations.of(context)!.localeName)
+                      .format(widget.task.deadlineDate!),
                   style: const TextStyle(
                     color: Colors.blue,
                   ),

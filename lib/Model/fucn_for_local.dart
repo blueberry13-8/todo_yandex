@@ -28,7 +28,7 @@ Future<int> getDoneNumLocal() async {
   for (int i = 0;
       i < Hive.lazyBox<TaskContainer>('box_for_tasks').length;
       i++) {
-    if ((await Hive.lazyBox<TaskContainer>('box_for_tasks').getAt(i))!.done){
+    if ((await Hive.lazyBox<TaskContainer>('box_for_tasks').getAt(i))!.done) {
       res++;
     }
   }

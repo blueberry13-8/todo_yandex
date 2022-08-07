@@ -143,7 +143,8 @@ class API {
     Map<String, String> header = {
       'X-Last-Known-Revision': revision.toString(),
       'Authorization': 'Bearer Floikwood'
-    };final response = await http.delete(uri, headers: header);
+    };
+    final response = await http.delete(uri, headers: header);
     debugPrint('deleteTask: ${response.statusCode}');
     if (!(await boolCheckRevision())) {
       resolveQueue();

@@ -49,8 +49,8 @@ class TaskContainer {
   @JsonKey(name: 'last_updated_by')
   String deviceId = "1323";
 
-  TaskContainer({required this.text, required this.importance, this.deadline}){
-    if (deadline != null){
+  TaskContainer({required this.text, required this.importance, this.deadline}) {
+    if (deadline != null) {
       deadlineDate = DateTime.fromMillisecondsSinceEpoch(deadline!);
     }
   }
