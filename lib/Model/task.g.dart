@@ -19,18 +19,19 @@ class TaskContainerAdapter extends TypeAdapter<TaskContainer> {
     return TaskContainer(
       text: fields[1] as String,
       importance: fields[2] as TaskImportance,
-      deadline: fields[3] as DateTime?,
+      deadline: fields[3] as int?,
     )
-      ..id = fields[0] as int
+      ..id = fields[0] as String
       ..done = fields[4] as bool
       ..creationTime = fields[5] as int
-      ..lastUpdateTime = fields[6] as int;
+      ..lastUpdateTime = fields[6] as int
+      ..deviceId = fields[7] as String;
   }
 
   @override
   void write(BinaryWriter writer, TaskContainer obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class TaskContainerAdapter extends TypeAdapter<TaskContainer> {
       ..writeByte(5)
       ..write(obj.creationTime)
       ..writeByte(6)
-      ..write(obj.lastUpdateTime);
+      ..write(obj.lastUpdateTime)
+      ..writeByte(7)
+      ..write(obj.deviceId);
   }
 
   @override
@@ -110,28 +113,28 @@ TaskContainer _$TaskContainerFromJson(Map<String, dynamic> json) =>
     TaskContainer(
       text: json['text'] as String,
       importance: $enumDecode(_$TaskImportanceEnumMap, json['importance']),
-      deadline: json['deadline'] == null
-          ? null
-          : DateTime.parse(json['deadline'] as String),
+      deadline: json['deadline'] as int?,
     )
-      ..id = json['id'] as int
+      ..id = json['id'] as String
       ..done = json['done'] as bool
       ..creationTime = json['created_at'] as int
-      ..lastUpdateTime = json['changed_at'] as int;
+      ..lastUpdateTime = json['changed_at'] as int
+      ..deviceId = json['last_updated_by'] as String;
 
 Map<String, dynamic> _$TaskContainerToJson(TaskContainer instance) =>
     <String, dynamic>{
       'id': instance.id,
       'text': instance.text,
       'importance': _$TaskImportanceEnumMap[instance.importance]!,
-      'deadline': instance.deadline?.toIso8601String(),
+      'deadline': instance.deadline,
       'done': instance.done,
       'created_at': instance.creationTime,
       'changed_at': instance.lastUpdateTime,
+      'last_updated_by': instance.deviceId,
     };
 
 const _$TaskImportanceEnumMap = {
-  TaskImportance.low: 0,
-  TaskImportance.basic: 1,
-  TaskImportance.important: 2,
+  TaskImportance.low: 'low',
+  TaskImportance.basic: 'basic',
+  TaskImportance.important: 'important',
 };

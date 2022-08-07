@@ -48,15 +48,15 @@ class _TasksPageState extends State<TasksPage> {
             slivers: <Widget>[
               SliverPersistentHeader(
                 delegate: MySliverAppBar(
-                  minHeight: 88,
-                  expandedHeight: 164,
-                  doneNum: done,
                   () {
                     showDone = !showDone;
                     print(showDone);
                     callbackSetState();
                   },
                   showDone,
+                  minHeight: 88,
+                  expandedHeight: 164,
+                  doneNum: done,
                 ),
                 pinned: true,
               ),

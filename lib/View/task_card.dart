@@ -4,6 +4,7 @@ import 'package:todo_yandex/Model/task.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo_yandex/View/task_adder.dart';
 import 'package:todo_yandex/ViewModel/task_func.dart';
+import '../Model/func_for_backend.dart';
 import 'app_theme.dart';
 import 'package:todo_yandex/Model/fucn_for_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -56,6 +57,7 @@ class _TaskCardState extends State<TaskCard> {
       onChanged: (value) {
         widget.task.done = value!;
         lBox.putAt(widget.index, widget.task);
+        API.editTask(widget.task);
         setState(() {});
       },
     );
@@ -77,6 +79,7 @@ class _TaskCardState extends State<TaskCard> {
         onChanged: (value) {
           widget.task.done = value!;
           lBox.putAt(widget.index, widget.task);
+          API.editTask(widget.task);
           setState(() {});
         },
         fillColor: MaterialStateProperty.all(Colors.red),
@@ -134,6 +137,7 @@ class _TaskCardState extends State<TaskCard> {
           if (direction == DismissDirection.startToEnd) {
             lBox.getAt(widget.index).then((val) {
               widget.task.done = !widget.task.done;
+              API.editTask(widget.task);
               lBox.putAt(widget.index, widget.task);
             });
             setState(() {});
@@ -185,7 +189,7 @@ class _TaskCardState extends State<TaskCard> {
               ? Text(
               DateFormat('d MMMM yyyy',
                   AppLocalizations.of(context)!.localeName)
-                  .format(widget.task.deadline!),
+                  .format(widget.task.deadlineDate!),
                   style: const TextStyle(
                     color: Colors.blue,
                   ),

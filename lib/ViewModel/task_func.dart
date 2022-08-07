@@ -6,7 +6,8 @@ Future<void> saveNewTask(
     DateTime? deadline, TaskImportance importance, String text) async {
   TaskContainer task = TaskContainer(text: text, importance: importance);
   if (deadline != null) {
-    task.deadline = deadline;
+    task.deadline = deadline.millisecondsSinceEpoch;
+    task.deadlineDate = deadline;
   }
   await addTaskLocal(task);
   await API.addTask(task);

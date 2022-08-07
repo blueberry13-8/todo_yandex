@@ -7,11 +7,11 @@ import 'package:todo_yandex/Model/task.dart';
 class API {
   static const String _mainAPI = 'https://beta.mrdekk.ru/todobackend/';
 
-  static final queueBox = Hive.box<Map<String, dynamic>>('box_queue_back');
+  static final queueBox = Hive.lazyBox<Map<String, dynamic>>('box_queue_back');
 
-  static Future<bool> boolCheckRevision() async{
+  static Future<bool> boolCheckRevision() async {
     int fromAPI = await getRevision();
-    if (fromAPI == -1){
+    if (fromAPI == -1) {
       return true;
     }
     int localRevision = Hive.box<int>('revision').getAt(0)!;
@@ -19,21 +19,22 @@ class API {
   }
 
   static Future<void> resolveQueue() async {
-    if (!(await boolCheckRevision())){
+    if (!(await boolCheckRevision())) {
+      debugPrint('резолвим');
       await Hive.lazyBox<TaskContainer>('box_for_tasks').clear();
       List<TaskContainer> list = await getTasksList();
-      for (var x in list){
+      for (var x in list) {
         await Hive.lazyBox<TaskContainer>('box_for_tasks').add(x);
       }
       await Hive.box<int>('revision').clear();
       await Hive.box<int>('revision').add(await getRevision());
       return;
     }
-    while (queueBox.isNotEmpty){
-      var item = queueBox.getAt(0);
-      if (item!.containsKey('addTask')){
+    while (queueBox.isNotEmpty) {
+      var item = await queueBox.getAt(0);
+      if (item!.containsKey('addTask')) {
         addTask(TaskContainer.fromJson(item['addTask']));
-      } else if (item.containsKey('editTask')){
+      } else if (item.containsKey('editTask')) {
         editTask(TaskContainer.fromJson(item['editTask']));
       } else {
         deleteTask(TaskContainer.fromJson(item['deleteTask']));
@@ -62,10 +63,10 @@ class API {
     if (response.statusCode != 200) {
       //TODO: Somehow do the error situation
     }
-    Map<String, dynamic> ans = jsonDecode(response.body).map();
-    List<TaskContainer> list = ans['list'];
-    return List<TaskContainer>.from(
-        ans['list']((x) => TaskContainer.fromJson(x)));
+    List<TaskContainer> ans = List<TaskContainer>.from(
+        jsonDecode(response.body)['list']
+            .map((x) => TaskContainer.fromJson(x)));
+    return ans;
   }
 
   static Future<void> updateListOnServer() async {
@@ -95,30 +96,35 @@ class API {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer Floikwood'
     };
-    final body = {"element": task.toJson()};
+    final body = jsonEncode({"element": task.toJson()});
     final response = await http.post(uri, headers: header, body: body);
-    debugPrint(response.statusCode.toString());
-    if (!(await boolCheckRevision())){
+    debugPrint('addTask: ${response.statusCode}');
+    debugPrint('addTask: ${response.body}');
+    if (!(await boolCheckRevision())) {
       resolveQueue();
       return errorTask;
     }
     if (response.statusCode != 200) {
-      queueBox.add({"addTask": task.toJson()});
+      queueBox.add({"addTask": jsonEncode(task.toJson())});
       return errorTask;
     }
+    await Hive.box<int>('revision').clear();
+    await Hive.box<int>('revision').add(await getRevision());
     return TaskContainer.fromJson(json.decode(response.body).map()['element']);
   }
 
   static Future<TaskContainer> editTask(TaskContainer task) async {
     final uri = Uri.parse('$_mainAPI/list/${task.id}');
-    final header = {
+    int revision = await getRevision();
+    Map<String, String> header = {
+      'X-Last-Known-Revision': revision.toString(),
       'Content-Type': 'application/json',
       'Authorization': 'Bearer Floikwood'
     };
-    final body = {"element": task.toJson()};
+    final body = jsonEncode({"element": task.toJson()});
     final response = await http.put(uri, headers: header, body: body);
-    debugPrint(response.statusCode.toString());
-    if (!(await boolCheckRevision())){
+    debugPrint('editTask: ${response.statusCode}');
+    if (!(await boolCheckRevision())) {
       resolveQueue();
       return errorTask;
     }
@@ -126,15 +132,20 @@ class API {
       queueBox.add({"editTask": task.toJson()});
       return errorTask;
     }
+    await Hive.box<int>('revision').clear();
+    await Hive.box<int>('revision').add(await getRevision());
     return TaskContainer.fromJson(json.decode(response.body).map()['element']);
   }
 
   static Future<TaskContainer> deleteTask(TaskContainer task) async {
     final uri = Uri.parse('$_mainAPI/list/${task.id}');
-    final header = {"Authorization": "Bearer Floikwood"};
-    final response = await http.delete(uri, headers: header);
-    debugPrint(response.statusCode.toString());
-    if (!(await boolCheckRevision())){
+    int revision = await getRevision();
+    Map<String, String> header = {
+      'X-Last-Known-Revision': revision.toString(),
+      'Authorization': 'Bearer Floikwood'
+    };final response = await http.delete(uri, headers: header);
+    debugPrint('deleteTask: ${response.statusCode}');
+    if (!(await boolCheckRevision())) {
       resolveQueue();
       return errorTask;
     }
@@ -142,6 +153,8 @@ class API {
       queueBox.add({"deleteTask": task.toJson()});
       return errorTask;
     }
+    await Hive.box<int>('revision').clear();
+    await Hive.box<int>('revision').add(await getRevision());
     return TaskContainer.fromJson(json.decode(response.body).map()['element']);
   }
 }

@@ -41,7 +41,7 @@ class _TaskAdderState extends State<TaskAdder> {
       controller.text = widget.task.text;
       if (widget.task.deadline != null) {
         deadlineSwitch = true;
-        selectedDate = widget.task.deadline!;
+        selectedDate = widget.task.deadlineDate!;
         deadlineDate = DateFormat('dd MMM yyyy').format(selectedDate);
       }
     }
@@ -85,7 +85,8 @@ class _TaskAdderState extends State<TaskAdder> {
                   widget.task.importance = importance;
                   widget.task.text = controller.value.text;
                   if (deadlineSwitch) {
-                    widget.task.deadline = selectedDate;
+                    widget.task.deadlineDate = selectedDate;
+                    widget.task.deadline = selectedDate.millisecondsSinceEpoch;
                   } else {
                     widget.task.deadline = null;
                   }
