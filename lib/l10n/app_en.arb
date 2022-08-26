@@ -11,5 +11,8 @@
     "doneBy" : "Do before",
     "save" : "SAVE",
     "deleteQuestion" : "Are you sure you wish to delete this task?",
-    "yes" : "Yes"
+    "yes" : "Yes",
+    "confirmDelete" : "Confirm",
+    "unsafeConfirm" : "You will lost unsaved task. Are you sure?",
+    "cancel" : "Cancel"
 }
