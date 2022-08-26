@@ -1,11 +1,12 @@
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:todo_yandex/screens/task_adder.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../model/task.dart';
+import '../navigation/controller.dart';
+import '../navigation/routes.dart';
 import '../view/main_appbar.dart';
 import '../view/task_card.dart';
 import '../view_model/task_func.dart';
@@ -57,7 +58,7 @@ class TasksPage2 extends ConsumerWidget {
                 delegate: MySliverAppBar(
                   () {
                     showDone = !showDone;
-                    ref.read(mainPageDataProvider.notifier).rebuild();
+                    ref.read(mainPageDataProvider.notifier).setShowMode();
                   },
                   showDone,
                   minHeight: 88,
@@ -103,11 +104,7 @@ class TasksPage2 extends ConsumerWidget {
                             if (ref.read(taskDataProvider).deadlineSwitch) {
                               ref.read(taskDataProvider.notifier).setSwitcher();
                             }
-                            //TODO: Solve this issue with navigator
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => TaskAdder2()));
+                            NavigationController().pushNamed(Routes.editor);
                           },
                           title: Container(
                             color: Theme.of(context).primaryColorLight,
@@ -178,16 +175,22 @@ class TasksPage2 extends ConsumerWidget {
         builder: (context, ref, _) {
           return FloatingActionButton(
             onPressed: () {
-              ref.read(taskDataProvider.notifier).setTask(TaskContainer(
-                    text: '',
-                    importance: TaskImportance.basic,
-                  ));
+              ref.read(taskDataProvider.notifier).task = TaskContainer(
+                text: '',
+                importance: TaskImportance.basic,
+              );
               if (ref.read(taskDataProvider).deadlineSwitch) {
-                ref.read(taskDataProvider.notifier).setSwitcher();
+                //  ref.read(taskDataProvider.notifier).setSwitcher();
+                ref.read(taskDataProvider).deadlineSwitch = false;
               }
-              //TODO: Solve this issue with navigator
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => TaskAdder2()));
+              ref.read(taskCreatedProvider.state).state = false;
+              try {
+                AppMetrica.reportEvent('Opened TaskAdder page');
+              } catch (e) {
+                debugPrint('AppMetrica: Cannot report event');
+              }
+
+              NavigationController().pushNamed(Routes.editor);
             },
             child: const Icon(Icons.add),
           );

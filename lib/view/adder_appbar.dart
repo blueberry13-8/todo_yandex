@@ -1,5 +1,8 @@
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../navigation/controller.dart';
 
 class AdderSliverAppBar extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
@@ -53,8 +56,7 @@ class AdderSliverAppBar extends SliverPersistentHeaderDelegate {
                           fontSize: 16,
                           height: 20 / 16,
                           fontWeight: FontWeight.normal,
-                          color: Theme.of(context).primaryColorDark
-                      ),
+                          color: Theme.of(context).primaryColorDark),
                     ),
                     actions: <Widget>[
                       TextButton(
@@ -76,8 +78,13 @@ class AdderSliverAppBar extends SliverPersistentHeaderDelegate {
                 },
               );
               if (result) {
+                try {
+                  AppMetrica.reportEvent('Closed TaskAdder page');
+                } catch (e) {
+                  debugPrint('AppMetrica: Cannot report event');
+                }
                 backFunc();
-                Navigator.pop(context);
+                NavigationController().pop();
               }
             },
           ),
@@ -87,6 +94,11 @@ class AdderSliverAppBar extends SliverPersistentHeaderDelegate {
           top: 20,
           child: TextButton(
             onPressed: () {
+              try {
+                AppMetrica.reportEvent('Added/Edited task');
+              } catch (e) {
+                debugPrint('AppMetrica: Cannot report event');
+              }
               saveFunc();
             },
             child: Text(

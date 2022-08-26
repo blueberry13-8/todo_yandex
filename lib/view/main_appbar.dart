@@ -88,13 +88,7 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
               color: Colors.blue,
             ),
             onPressed: () {
-              //TODO: Change the ICON and send the callback!!!
-              // if (eyeIcon == Icons.visibility) {
-              //   eyeIcon = Icons.visibility_off;
-              // } else {
-              //   eyeIcon = Icons.visibility;
-              // }
-              showDone = !showDone;
+              //showDone = !showDone;
               callback();
             },
           ),

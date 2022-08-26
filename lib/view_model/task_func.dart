@@ -10,7 +10,12 @@ class TaskFunctions {
     if (fromAPI == -1) {
       return -1;
     }
-    int localRevision = Hive.box<int>('revision').getAt(0)!;
+    int localRevision;
+    try {
+      localRevision = Hive.box<int>('revision').getAt(0)!;
+    } catch (e){
+      localRevision = 0;
+    }
     if (fromAPI == localRevision) {
       return 0;
     }

@@ -1,5 +1,10 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:platform_device_id/platform_device_id.dart';
+
+// import 'package:freezed_annotation/freezed_annotation.dart';
+//
+// part 'task.freezed.dart';
 
 part 'task.g.dart';
 
@@ -47,7 +52,7 @@ class TaskContainer {
 
   @HiveField(7)
   @JsonKey(name: 'last_updated_by')
-  String deviceId = "1323";
+  String deviceId = PlatformDeviceId.getDeviceId.toString();
 
   TaskContainer({required this.text, required this.importance, this.deadline}) {
     if (deadline != null) {

@@ -1,14 +1,15 @@
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_yandex/model/task.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:todo_yandex/view/task_adder.dart';
 import 'package:todo_yandex/view_model/task_func.dart';
+import '../navigation/controller.dart';
+import '../navigation/routes.dart';
 import '../screens/task_adder.dart';
 import 'package:todo_yandex/model/func_for_local.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'app_theme.dart';
 
 class TaskCard extends StatefulWidget {
@@ -93,12 +94,14 @@ class _TaskCardState extends State<TaskCard> {
           top: 15,
           right: 15,
         ),
-        color: Color.fromRGBO(Themes.colorR, Themes.colorG, Themes.colorB, 0.16),
+        color:
+            Color.fromRGBO(Themes.colorR, Themes.colorG, Themes.colorB, 0.16),
         child: Checkbox(
           value: widget.task.done,
           activeColor: Colors.green,
           side: BorderSide(
-            color: Color.fromRGBO(Themes.colorR, Themes.colorG, Themes.colorB, 1),
+            color:
+                Color.fromRGBO(Themes.colorR, Themes.colorG, Themes.colorB, 1),
             width: 2,
           ),
           onChanged: (value) {
@@ -123,6 +126,7 @@ class _TaskCardState extends State<TaskCard> {
         borderRadius: border,
         boxShadow: [
           BoxShadow(
+            blurStyle: BlurStyle.outer,
             color: Theme.of(context).shadowColor,
             spreadRadius: 1,
             blurRadius: 1,
@@ -171,7 +175,7 @@ class _TaskCardState extends State<TaskCard> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text("Confirm"),
+                  title: Text(AppLocalizations.of(context)!.confirmDelete),
                   content: Text(AppLocalizations.of(context)!.deleteQuestion),
                   actions: <Widget>[
                     TextButton(
@@ -228,22 +232,14 @@ class _TaskCardState extends State<TaskCard> {
                                 widget.task.deadlineDate != null) {
                           ref.read(taskDataProvider.notifier).setSwitcher();
                         }
-                        //TODO: Solve this issue with navigator
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TaskAdder2()));
-                        //TODO: Move away this navigator call!!!
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskAdder(
-                              created: true,
-                              task: widget.task,
-                              index: widget.index,
-                            ),
-                          ),
-                        );
+                        ref.read(taskIndexProvider.state).state = widget.index;
+                        ref.read(taskCreatedProvider.state).state = true;
+                        try {
+                          AppMetrica.reportEvent('Opened TaskAdder page');
+                        } catch (e) {
+                          debugPrint('AppMetrica: Cannot report event');
+                        }
+                        NavigationController().pushNamed(Routes.editor);
                       },
                       icon: Icon(
                         Icons.info_outline,
@@ -290,24 +286,35 @@ class _TaskCardState extends State<TaskCard> {
                         width: 0,
                         height: 0,
                       ),
-                trailing: IconButton(
-                  onPressed: () {
-                    //TODO: Move away this navigator call!!!
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TaskAdder(
-                          created: true,
-                          task: widget.task,
-                          index: widget.index,
-                        ),
+                trailing: Consumer(
+                  builder: (context, ref, _) {
+                    return IconButton(
+                      onPressed: () {
+                        ref
+                            .read(taskDataProvider.notifier)
+                            .setTask(widget.task);
+                        if (ref.read(taskDataProvider).deadlineSwitch &&
+                                widget.task.deadlineDate == null ||
+                            !ref.read(taskDataProvider).deadlineSwitch &&
+                                widget.task.deadlineDate != null) {
+                          ref.read(taskDataProvider.notifier).setSwitcher();
+                        }
+                        ref.read(taskIndexProvider.notifier).state =
+                            widget.index;
+                        ref.read(taskCreatedProvider.notifier).state = true;
+                        try {
+                          AppMetrica.reportEvent('Opened TaskAdder page');
+                        } catch (e) {
+                          debugPrint('AppMetrica: Cannot report event');
+                        }
+                        NavigationController().pushNamed(Routes.editor);
+                      },
+                      icon: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).disabledColor,
                       ),
                     );
                   },
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: Theme.of(context).disabledColor,
-                  ),
                 ),
                 leading: widget.task.importance == TaskImportance.important
                     ? redCheckBox

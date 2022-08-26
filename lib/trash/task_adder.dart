@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_yandex/model/task.dart';
 import 'package:todo_yandex/view_model/task_func.dart';
-import 'adder_appbar.dart';
+import '../view/adder_appbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskAdder extends StatefulWidget {

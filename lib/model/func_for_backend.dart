@@ -125,13 +125,13 @@ class API {
       'Authorization': 'Bearer Floikwood'
     };
     http.Response response;
-    try{
+    try {
       response = await http.delete(uri, headers: header);
       if (response.statusCode != 200) {
         queueBox.add({"deleteTask": task.toJson()});
         return errorTask;
       }
-    }catch(e){
+    } catch (e) {
       queueBox.add({"deleteTask": task.toJson()});
       return errorTask;
     }

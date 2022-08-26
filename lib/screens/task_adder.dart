@@ -21,6 +21,11 @@ class TaskData extends ChangeNotifier {
 
   void setTask(TaskContainer taskContainer) {
     task = taskContainer;
+    if (task.deadlineDate != null) {
+      deadlineSwitch = true;
+    } else {
+      deadlineSwitch = false;
+    }
     notifyListeners();
   }
 
@@ -52,9 +57,12 @@ class TaskAdder2 extends ConsumerWidget {
     bool deadlineSwitcher = ref.watch(taskDataProvider).deadlineSwitch;
     String importanceStr = AppLocalizations.of(context)!.no;
     _controller.text = _lastText != '' ? _lastText : task.text;
-    if (task.deadline != null && !deadlineSwitcher) {
+    if (task.deadlineDate != null && !deadlineSwitcher) {
       deadlineSwitcher = true;
-      ref.read(taskDataProvider.notifier).setSwitcher();
+      ref.read(taskDataProvider).deadlineSwitch = true;
+    } else if (task.deadlineDate == null) {
+      deadlineSwitcher = false;
+      ref.read(taskDataProvider).deadlineSwitch = false;
     }
     if (task.importance == TaskImportance.low) {
       importanceStr = AppLocalizations.of(context)!.low;
@@ -194,14 +202,12 @@ class TaskAdder2 extends ConsumerWidget {
                             task.deadlineDate =
                                 await _selectDate(context, task.deadlineDate);
                             ref.read(taskDataProvider.notifier).setTask(task);
-                            if (task.deadlineDate == null) {
-                              ref.read(taskDataProvider.notifier).setSwitcher();
-                            }
                           } else {
                             task.deadlineDate = null;
                             ref.read(taskDataProvider.notifier).setTask(task);
                           }
-                          ref.read(taskDataProvider.notifier).setSwitcher();
+                          deadlineSwitcher = newValue;
+                          // ref.read(taskDataProvider.notifier).setSwitcher();
                         },
                         value: deadlineSwitcher,
                       ),
@@ -217,6 +223,8 @@ class TaskAdder2 extends ConsumerWidget {
                     const Divider(
                       thickness: 1,
                       height: 0.5,
+                      indent: 0,
+                      endIndent: 0,
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -314,6 +322,11 @@ class TaskAdder2 extends ConsumerWidget {
   }
 
   Future<void> saveTask(bool created, TaskContainer task, int index) async {
+    if (task.deadlineDate != null) {
+      task.deadline = task.deadlineDate!.millisecondsSinceEpoch;
+    } else {
+      task.deadline = null;
+    }
     task.text = _controller.value.text;
     _lastText = '';
     if (created) {
