@@ -1,16 +1,22 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo_yandex/model/task.dart';
-import 'package:todo_yandex/view_model/task_func.dart';
+
+final apiProvider = Provider((ref) => API(ref: ref));
 
 class API {
+  final ProviderRef ref;
+
+  API({required this.ref});
+
   static const String _mainAPI = 'https://beta.mrdekk.ru/todobackend/';
 
   static final queueBox = Hive.lazyBox<Map<String, dynamic>>('box_queue_back');
 
-  static Future<int> getRevision() async {
+  Future<int> getRevision() async {
     final uri = Uri.parse('$_mainAPI/list');
     final header = {"Authorization": "Bearer Floikwood"};
     http.Response response;
@@ -27,7 +33,7 @@ class API {
     return ans['revision'];
   }
 
-  static Future<List<TaskContainer>> getTasksList() async {
+  Future<List<TaskContainer>> getTasksList() async {
     final uri = Uri.parse('$_mainAPI/list');
     final header = {"Authorization": "Bearer Floikwood"};
     final response = await http.get(uri, headers: header);
@@ -41,11 +47,11 @@ class API {
     return ans;
   }
 
-  static Future<void> updateListOnServer() async {
+  Future<void> updateListOnServer() async {
     //TODO: ...????
   }
 
-  static Future<TaskContainer> getTask(int id) async {
+  Future<TaskContainer> getTask(int id) async {
     final uri = Uri.parse('$_mainAPI/list/$id');
     final header = {"Authorization": "Bearer Floikwood"};
     final response = await http.get(uri, headers: header);
@@ -60,10 +66,10 @@ class API {
     return TaskContainer.fromJson(json.decode(response.body).map()['element']);
   }
 
-  static Future<TaskContainer> addTask(TaskContainer task) async {
-    if ((await TaskFunctions.checkRevision()) == 1) {
-      await TaskFunctions.resolveQueue();
-    }
+  Future<TaskContainer> addTask(TaskContainer task) async {
+    // if ((await ref.watch(tasksFunctionsProvider).checkRevision()) == 1) {
+    //   await ref.watch(tasksFunctionsProvider).resolveQueue();
+    // }
     final uri = Uri.parse('$_mainAPI/list');
     int revision = await getRevision();
     Map<String, String> header = {
@@ -83,14 +89,14 @@ class API {
       queueBox.add({"addTask": jsonEncode(task.toJson())});
       return errorTask;
     }
-    await TaskFunctions.updateLocalRevision();
+    //await ref.watch(tasksFunctionsProvider).updateLocalRevision();
     return TaskContainer.fromJson(json.decode(response.body)['element']);
   }
 
-  static Future<TaskContainer> editTask(TaskContainer task) async {
-    if ((await TaskFunctions.checkRevision()) == 1) {
-      await TaskFunctions.resolveQueue();
-    }
+  Future<TaskContainer> editTask(TaskContainer task) async {
+    // if ((await ref.watch(tasksFunctionsProvider).checkRevision()) == 1) {
+    //   await ref.watch(tasksFunctionsProvider).resolveQueue();
+    // }
     final uri = Uri.parse('$_mainAPI/list/${task.id}');
     int revision = await getRevision();
     Map<String, String> header = {
@@ -110,14 +116,14 @@ class API {
       queueBox.add({"editTask": task.toJson()});
       return errorTask;
     }
-    await TaskFunctions.updateLocalRevision();
+    //await ref.watch(tasksFunctionsProvider).updateLocalRevision();
     return TaskContainer.fromJson(json.decode(response.body)['element']);
   }
 
-  static Future<TaskContainer> deleteTask(TaskContainer task) async {
-    if ((await TaskFunctions.checkRevision()) == 1) {
-      await TaskFunctions.resolveQueue();
-    }
+  Future<TaskContainer> deleteTask(TaskContainer task) async {
+    // if ((await ref.watch(tasksFunctionsProvider).checkRevision()) == 1) {
+    //   await ref.watch(tasksFunctionsProvider).resolveQueue();
+    // }
     final uri = Uri.parse('$_mainAPI/list/${task.id}');
     int revision = await getRevision();
     Map<String, String> header = {
@@ -135,7 +141,7 @@ class API {
       queueBox.add({"deleteTask": task.toJson()});
       return errorTask;
     }
-    await TaskFunctions.updateLocalRevision();
+    //await ref.watch(tasksFunctionsProvider).updateLocalRevision();
     return TaskContainer.fromJson(json.decode(response.body)['element']);
   }
 }

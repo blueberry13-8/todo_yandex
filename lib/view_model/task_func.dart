@@ -1,19 +1,26 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:todo_yandex/model/func_for_local.dart';
 import 'package:todo_yandex/model/task.dart';
 import 'package:todo_yandex/model/func_for_backend.dart';
 
+final tasksFunctionsProvider = Provider((ref) => TaskFunctions(ref: ref));
+
 class TaskFunctions {
-  static Future<int> checkRevision() async {
-    int fromAPI = await API.getRevision();
+  final ProviderRef ref;
+
+  TaskFunctions({required this.ref});
+
+  Future<int> checkRevision() async {
+    int fromAPI = await ref.watch(apiProvider).getRevision();
     if (fromAPI == -1) {
       return -1;
     }
     int localRevision;
     try {
       localRevision = Hive.box<int>('revision').getAt(0)!;
-    } catch (e){
+    } catch (e) {
       localRevision = 0;
     }
     if (fromAPI == localRevision) {
@@ -25,19 +32,19 @@ class TaskFunctions {
     return -1;
   }
 
-  static Future<void> updateLocalRevision() async {
+  Future<void> updateLocalRevision() async {
     await Hive.box<int>('revision').clear();
-    await Hive.box<int>('revision').add(await API.getRevision());
+    await Hive.box<int>('revision').add(await ref.watch(apiProvider).getRevision());
   }
 
-  static Future<void> resolveQueue() async {
+  Future<void> resolveQueue() async {
     if ((await checkRevision()) == 1) {
       debugPrint('резолвим');
       await Hive.lazyBox<TaskContainer>('box_for_tasks').clear();
-      List<TaskContainer> list = await API.getTasksList();
+      List<TaskContainer> list = await ref.watch(apiProvider).getTasksList();
       await updateLocalRevision();
       for (var x in list) {
-        await LocalTasks.addTaskLocal(x);
+        await ref.watch(localTasksProvider).addTaskLocal(x);
         //await Hive.lazyBox<TaskContainer>('box_for_tasks').add(x);
       }
       return;
@@ -45,35 +52,47 @@ class TaskFunctions {
     while (API.queueBox.isNotEmpty) {
       Map<String, dynamic> item = (await API.queueBox.getAt(0))!;
       if (item.containsKey('addTask')) {
-        API.addTask(TaskContainer.fromJson(item['addTask']));
+        ref.watch(apiProvider).addTask(TaskContainer.fromJson(item['addTask']));
       } else if (item.containsKey('editTask')) {
-        API.editTask(TaskContainer.fromJson(item['editTask']));
+        ref.watch(apiProvider).editTask(TaskContainer.fromJson(item['editTask']));
       } else {
-        API.deleteTask(TaskContainer.fromJson(item['deleteTask']));
+        ref.watch(apiProvider).deleteTask(TaskContainer.fromJson(item['deleteTask']));
       }
       await API.queueBox.deleteAt(0);
     }
   }
 
-  static Future<void> saveNewTask(
+  Future<void> saveNewTask(
       DateTime? deadline, TaskImportance importance, String text) async {
     TaskContainer task = TaskContainer(text: text, importance: importance);
     if (deadline != null) {
       task.deadline = deadline.millisecondsSinceEpoch;
       task.deadlineDate = deadline;
     }
-    await LocalTasks.addTaskLocal(task);
-    await API.addTask(task);
+    if (await checkRevision() == 1) {
+      await resolveQueue();
+    }
+    await ref.watch(localTasksProvider).addTaskLocal(task);
+    await ref.watch(apiProvider).addTask(task);
+    await updateLocalRevision();
   }
 
-  static Future<void> saveExistsTask(TaskContainer task, int index) async {
+  Future<void> saveExistsTask(TaskContainer task, int index) async {
+    if (await checkRevision() == 1) {
+      await resolveQueue();
+    }
     task.lastUpdateTime = DateTime.now().millisecondsSinceEpoch;
-    await LocalTasks.editTaskLocal(task, index);
-    await API.editTask(task);
+    await ref.watch(localTasksProvider).editTaskLocal(task, index);
+    await ref.watch(apiProvider).editTask(task);
+    await updateLocalRevision();
   }
 
-  static Future<void> deleteTask(int index, TaskContainer task) async {
-    await LocalTasks.deleteTaskLocal(index);
-    await API.deleteTask(task);
+  Future<void> deleteTask(int index, TaskContainer task) async {
+    if (await checkRevision() == 1) {
+      await resolveQueue();
+    }
+    await ref.watch(localTasksProvider).deleteTaskLocal(index);
+    await ref.watch(apiProvider).deleteTask(task);
+    await updateLocalRevision();
   }
 }

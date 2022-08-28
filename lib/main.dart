@@ -37,8 +37,8 @@ void main() async {
 
     final remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(minutes: 10),
+      fetchTimeout: const Duration(minutes: 5),
+      minimumFetchInterval: const Duration(minutes: 60),
     ));
     await remoteConfig.fetchAndActivate();
     Themes.fetchImportantColor();

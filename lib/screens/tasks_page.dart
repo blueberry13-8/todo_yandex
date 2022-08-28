@@ -38,9 +38,9 @@ class TasksPage2 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TaskFunctions.checkRevision().then((value) async {
+    ref.watch(tasksFunctionsProvider).checkRevision().then((value) async {
       if (value == 1) {
-        await TaskFunctions.resolveQueue();
+        await ref.watch(tasksFunctionsProvider).resolveQueue();
         ref.read(mainPageDataProvider.notifier).rebuild();
       }
     });

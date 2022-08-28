@@ -1,20 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:todo_yandex/model/task.dart';
 
+final localTasksProvider = Provider((ref) => LocalTasks());
+
 class LocalTasks {
-  static Future<void> addTaskLocal(TaskContainer task) async {
+  Future<void> addTaskLocal(TaskContainer task) async {
     await Hive.lazyBox<TaskContainer>('box_for_tasks').add(task);
   }
 
-  static Future<void> editTaskLocal(TaskContainer task, int index) async {
+  Future<void> editTaskLocal(TaskContainer task, int index) async {
     await Hive.lazyBox<TaskContainer>('box_for_tasks').putAt(index, task);
   }
 
-  static Future<void> deleteTaskLocal(int index) async {
+  Future<void> deleteTaskLocal(int index) async {
     await Hive.lazyBox<TaskContainer>('box_for_tasks').deleteAt(index);
   }
 
-  static Future<List<TaskContainer>> getTaskListLocal() async {
+  Future<List<TaskContainer>> getTaskListLocal() async {
     List<TaskContainer> list = [];
     for (int i = 0;
         i < Hive.lazyBox<TaskContainer>('box_for_tasks').length;
@@ -24,7 +27,7 @@ class LocalTasks {
     return list;
   }
 
-  static Future<int> getDoneNumLocal() async {
+  Future<int> getDoneNumLocal() async {
     int res = 0;
     for (int i = 0;
         i < Hive.lazyBox<TaskContainer>('box_for_tasks').length;

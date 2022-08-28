@@ -69,7 +69,6 @@ class TaskAdder2 extends ConsumerWidget {
     } else if (task.importance == TaskImportance.important) {
       importanceStr = AppLocalizations.of(context)!.high;
     }
-
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -79,7 +78,8 @@ class TaskAdder2 extends ConsumerWidget {
             SliverPersistentHeader(
               delegate: AdderSliverAppBar(
                 saveFunc: () {
-                  saveTask(created, task, index)
+                  final tasksFunc = ref.watch(tasksFunctionsProvider);
+                  saveTask(created, task, index, tasksFunc)
                       .then((value) => Navigator.pop(context));
                 },
                 minHeight: 67,
@@ -274,7 +274,7 @@ class TaskAdder2 extends ConsumerWidget {
                           },
                         );
                         if (result) {
-                          TaskFunctions.deleteTask(index, task)
+                          ref.watch(tasksFunctionsProvider).deleteTask(index, task)
                               .then((value) => Navigator.pop(context));
                         }
                       },
@@ -321,7 +321,7 @@ class TaskAdder2 extends ConsumerWidget {
     return null;
   }
 
-  Future<void> saveTask(bool created, TaskContainer task, int index) async {
+  Future<void> saveTask(bool created, TaskContainer task, int index, TaskFunctions taskFunctions) async {
     if (task.deadlineDate != null) {
       task.deadline = task.deadlineDate!.millisecondsSinceEpoch;
     } else {
@@ -330,9 +330,9 @@ class TaskAdder2 extends ConsumerWidget {
     task.text = _controller.value.text;
     _lastText = '';
     if (created) {
-      await TaskFunctions.saveExistsTask(task, index);
+      await taskFunctions.saveExistsTask(task, index);
     } else {
-      await TaskFunctions.saveNewTask(
+      await taskFunctions.saveNewTask(
           task.deadlineDate, task.importance, task.text);
     }
     _controller.text = '';
