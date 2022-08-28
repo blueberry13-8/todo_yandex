@@ -22,7 +22,8 @@ class DualRing extends StatefulWidget {
   DualRingState createState() => DualRingState();
 }
 
-class DualRingState extends State<DualRing> with SingleTickerProviderStateMixin {
+class DualRingState extends State<DualRing>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -30,11 +31,13 @@ class DualRingState extends State<DualRing> with SingleTickerProviderStateMixin 
   void initState() {
     super.initState();
 
-    _controller = (widget.controller ?? AnimationController(vsync: this, duration: widget.duration))
+    _controller = (widget.controller ??
+        AnimationController(vsync: this, duration: widget.duration))
       ..addListener(() => setState(() {}))
       ..repeat();
-    _animation = Tween(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller, curve: const Interval(0.0, 1.0, curve: Curves.linear)));
+    _animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 1.0, curve: Curves.linear)));
   }
 
   @override
@@ -49,10 +52,12 @@ class DualRingState extends State<DualRing> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) {
     return Center(
       child: Transform(
-        transform: Matrix4.identity()..rotateZ((_animation.value) * math.pi * 2),
+        transform: Matrix4.identity()
+          ..rotateZ((_animation.value) * math.pi * 2),
         alignment: FractionalOffset.center,
         child: CustomPaint(
-          painter: _DualRingPainter(angle: 90, paintWidth: widget.lineWidth, color: widget.color),
+          painter: _DualRingPainter(
+              angle: 90, paintWidth: widget.lineWidth, color: widget.color),
           child: SizedBox.fromSize(size: Size.square(widget.size)),
         ),
       ),
@@ -61,11 +66,12 @@ class DualRingState extends State<DualRing> with SingleTickerProviderStateMixin 
 }
 
 class _DualRingPainter extends CustomPainter {
-  _DualRingPainter({required this.angle, required double paintWidth, required Color color})
+  _DualRingPainter(
+      {required this.angle, required double paintWidth, required Color color})
       : ringPaint = Paint()
-    ..color = color
-    ..strokeWidth = paintWidth
-    ..style = PaintingStyle.stroke;
+          ..color = color
+          ..strokeWidth = paintWidth
+          ..style = PaintingStyle.stroke;
 
   final Paint ringPaint;
   final double angle;

@@ -34,7 +34,8 @@ class TaskFunctions {
 
   Future<void> updateLocalRevision() async {
     await Hive.box<int>('revision').clear();
-    await Hive.box<int>('revision').add(await ref.watch(apiProvider).getRevision());
+    await Hive.box<int>('revision')
+        .add(await ref.watch(apiProvider).getRevision());
   }
 
   Future<void> resolveQueue() async {
@@ -54,9 +55,13 @@ class TaskFunctions {
       if (item.containsKey('addTask')) {
         ref.watch(apiProvider).addTask(TaskContainer.fromJson(item['addTask']));
       } else if (item.containsKey('editTask')) {
-        ref.watch(apiProvider).editTask(TaskContainer.fromJson(item['editTask']));
+        ref
+            .watch(apiProvider)
+            .editTask(TaskContainer.fromJson(item['editTask']));
       } else {
-        ref.watch(apiProvider).deleteTask(TaskContainer.fromJson(item['deleteTask']));
+        ref
+            .watch(apiProvider)
+            .deleteTask(TaskContainer.fromJson(item['deleteTask']));
       }
       await API.queueBox.deleteAt(0);
     }

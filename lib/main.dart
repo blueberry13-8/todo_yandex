@@ -71,8 +71,8 @@ class ToDoApp extends StatelessWidget {
       ],
       navigatorKey: NavigationController().key,
       routes: {
-        Routes.main: (_) => const TasksPage2(),
-        Routes.editor: (_) => TaskAdder2(),
+        Routes.main: (_) => const TasksPage(),
+        Routes.editor: (_) => TaskAdder(),
       },
       initialRoute: Routes.main,
       //home: const TasksPage2(),

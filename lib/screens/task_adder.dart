@@ -37,15 +37,10 @@ class TaskData extends ChangeNotifier {
 
 final taskDataProvider = ChangeNotifierProvider<TaskData>((ref) => TaskData());
 
-// final isCreatedTaskProvider = Provider<bool>((ref){
-//   final importance = ref.watch(selectedImportanceProvider.state).state;
-//   return importance;
-// });
-
 String _lastText = '';
 
-class TaskAdder2 extends ConsumerWidget {
-  TaskAdder2({Key? key}) : super(key: key);
+class TaskAdder extends ConsumerWidget {
+  TaskAdder({Key? key}) : super(key: key);
 
   final TextEditingController _controller = TextEditingController();
 
@@ -274,7 +269,9 @@ class TaskAdder2 extends ConsumerWidget {
                           },
                         );
                         if (result) {
-                          ref.watch(tasksFunctionsProvider).deleteTask(index, task)
+                          ref
+                              .watch(tasksFunctionsProvider)
+                              .deleteTask(index, task)
                               .then((value) => Navigator.pop(context));
                         }
                       },
@@ -321,7 +318,8 @@ class TaskAdder2 extends ConsumerWidget {
     return null;
   }
 
-  Future<void> saveTask(bool created, TaskContainer task, int index, TaskFunctions taskFunctions) async {
+  Future<void> saveTask(bool created, TaskContainer task, int index,
+      TaskFunctions taskFunctions) async {
     if (task.deadlineDate != null) {
       task.deadline = task.deadlineDate!.millisecondsSinceEpoch;
     } else {

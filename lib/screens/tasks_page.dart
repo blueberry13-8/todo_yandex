@@ -33,8 +33,8 @@ class MainPageNotifier extends ChangeNotifier {
 final mainPageDataProvider =
     ChangeNotifierProvider<MainPageNotifier>((ref) => MainPageNotifier());
 
-class TasksPage2 extends ConsumerWidget {
-  const TasksPage2({Key? key}) : super(key: key);
+class TasksPage extends ConsumerWidget {
+  const TasksPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
