@@ -8,16 +8,40 @@ TODO list(project from Yandex Flutter course).
 
 ## APK
 
-[Download the APK](https://disk.yandex.ru/d/9rPKCFKpA4icRA)
+[Download the APK](https://disk.yandex.ru/d/wbve5L1bXokQnw)
 
 
-## List of features
-* Saving files in Backend Storage
-* Files sharing
-* Reporting crashes via Crashlytics
-* Dark and light theme
-* Beautiful animations
+## Фичи
+* Сохранение заданий на сервер
+* Важность для каждого задания
+* Установка дедлайнов
+* Сокрытие выполненных дел
+* Репорт всех багов при помощи Crashlytics
+* Темная и светлая темы
+* Немного анимаций
 
+
+##Скриншоты
+<p float="left">
+ <img src="assets/screens/screen (1).jpg" width="230" height="490">
+ <img src="assets/screens/screen (2).jpg" width="230" height="490">
+</p>
+<p float="left">
+ <img src="assets/screens/screen (3).jpg" width="230" height="490">
+ <img src="assets/screens/screen (4).jpg" width="230" height="490">
+</p>
+<p float="left">
+ <img src="assets/screens/screen (5).jpg" width="230" height="490">
+ <img src="assets/screens/screen (6).jpg" width="230" height="490">
+</p>
+<p float="left">
+ <img src="assets/screens/screen (7).jpg" width="230" height="490">
+ <img src="assets/screens/screen (8).jpg" width="230" height="490">
+</p>
+<p float="left">
+ <img src="assets/screens/screen (9).jpg" width="230" height="490">
+ <img src="assets/screens/screen (10).jpg" width="230" height="490">
+</p>
 
 ## Использованные технологии
 
@@ -26,3 +50,6 @@ TODO list(project from Yandex Flutter course).
 * [Firebase](https://firebase.google.com)
   * Remote configs
   * Crashlytics
+  * App Distribution
+* AppMetrica
+* Riverpod
