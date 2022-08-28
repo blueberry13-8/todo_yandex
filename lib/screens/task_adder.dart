@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_yandex/model/task.dart';
+import 'package:todo_yandex/navigation/controller.dart';
 import 'package:todo_yandex/view_model/task_func.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../navigation/routes.dart';
 import '../view/adder_appbar.dart';
 import '../view/app_theme.dart';
 
@@ -73,9 +75,12 @@ class TaskAdder extends ConsumerWidget {
             SliverPersistentHeader(
               delegate: AdderSliverAppBar(
                 saveFunc: () {
+                  NavigationController().pushNamed(Routes.animation);
                   final tasksFunc = ref.watch(tasksFunctionsProvider);
-                  saveTask(created, task, index, tasksFunc)
-                      .then((value) => Navigator.pop(context));
+                  saveTask(created, task, index, tasksFunc).then((value) {
+                    NavigationController().pop();
+                    NavigationController().pop();
+                  });
                 },
                 minHeight: 67,
                 expandedHeight: 68,
@@ -269,10 +274,14 @@ class TaskAdder extends ConsumerWidget {
                           },
                         );
                         if (result) {
+                          NavigationController().pushNamed(Routes.animation);
                           ref
                               .watch(tasksFunctionsProvider)
                               .deleteTask(index, task)
-                              .then((value) => Navigator.pop(context));
+                              .then((value) {
+                            NavigationController().pop();
+                            NavigationController().pop();
+                          });
                         }
                       },
                       title: Text(

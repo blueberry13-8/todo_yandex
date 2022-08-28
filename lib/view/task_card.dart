@@ -70,10 +70,12 @@ class _TaskCardState extends State<TaskCard> {
               widget.task.done = value!;
               // LocalSave.lBox.putAt(widget.index, widget.task);
               // API.editTask(widget.task);
+              NavigationController().pushNamed(Routes.animation);
               ref
                   .watch(tasksFunctionsProvider)
                   .saveExistsTask(widget.task, widget.index)
                   .then((value) {
+                NavigationController().pop();
                 setState(() {});
               });
             },
@@ -118,10 +120,12 @@ class _TaskCardState extends State<TaskCard> {
                 widget.task.done = value!;
                 // LocalSave.lBox.putAt(widget.index, widget.task);
                 // API.editTask(widget.task);
+                NavigationController().pushNamed(Routes.animation);
                 ref
                     .watch(tasksFunctionsProvider)
                     .saveExistsTask(widget.task, widget.index)
                     .then((value) {
+                  NavigationController().pop();
                   setState(() {});
                 });
               },
@@ -181,13 +185,17 @@ class _TaskCardState extends State<TaskCard> {
             ),
             confirmDismiss: (DismissDirection direction) async {
               if (direction == DismissDirection.startToEnd) {
+                NavigationController().pushNamed(Routes.animation);
                 LocalTasks.lBox.getAt(widget.index).then((val) {
                   widget.task.done = !widget.task.done;
                   ref
                       .watch(tasksFunctionsProvider)
-                      .saveExistsTask(widget.task, widget.index);
+                      .saveExistsTask(widget.task, widget.index)
+                      .then((value) {
+                    NavigationController().pop();
+                    setState(() {});
+                  });
                 });
-                setState(() {});
                 return false;
               } else {
                 bool result = await showDialog(
@@ -210,9 +218,11 @@ class _TaskCardState extends State<TaskCard> {
                   },
                 );
                 if (result) {
+                  NavigationController().pushNamed(Routes.animation);
                   await ref
                       .watch(tasksFunctionsProvider)
                       .deleteTask(widget.index, widget.task);
+                  NavigationController().pop();
                 }
                 return false;
               }

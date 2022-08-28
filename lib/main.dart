@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:todo_yandex/navigation/controller.dart';
+import 'package:todo_yandex/view/animation.dart';
 import 'view/app_theme.dart';
 import 'firebase_options.dart';
 import 'navigation/routes.dart';
@@ -73,6 +74,7 @@ class ToDoApp extends StatelessWidget {
       routes: {
         Routes.main: (_) => const TasksPage(),
         Routes.editor: (_) => TaskAdder(),
+        Routes.animation: (_) => const DualRing(color: Colors.blue),
       },
       initialRoute: Routes.main,
       //home: const TasksPage2(),
